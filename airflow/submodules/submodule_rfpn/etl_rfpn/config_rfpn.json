@@ -1,0 +1,7 @@
+{
+    "MODEL_DIR": "/opt/airflow/otl/modelos/modelo_rfpn",
+    "ETL_DIR": "/opt/airflow/otl/etl/etl_rfpn",
+    "CONFIG_PATH": "/opt/airflow/otl/etl/etl_rfpn/config.json",
+    "TEMP_FOLDER": "/opt/airflow/otl/etl/etl_rfpn/temp",
+    "GX_DIR": "/opt/airflow/otl/etl/etl_rfpn/gx"
+}

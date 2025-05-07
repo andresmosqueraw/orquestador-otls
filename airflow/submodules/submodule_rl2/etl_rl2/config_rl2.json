@@ -1,0 +1,7 @@
+{
+    "MODEL_DIR": "/opt/airflow/otl/modelos/modelo_rl2",
+    "ETL_DIR": "/opt/airflow/otl/etl/etl_rl2",
+    "CONFIG_PATH": "/opt/airflow/otl/etl/etl_rl2/config.json",
+    "TEMP_FOLDER": "/opt/airflow/otl/etl/etl_rl2/temp",
+    "GX_DIR": "/opt/airflow/otl/etl/etl_rl2/gx"
+}

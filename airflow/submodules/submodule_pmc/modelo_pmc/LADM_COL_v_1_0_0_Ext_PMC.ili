@@ -1,0 +1,368 @@
+INTERLIS 2.3;
+
+/** El POMCA es el instrumento a través del cual se realiza la planeación del uso coordinado del suelo, de las aguas, de la flora y la fauna y el manejo de la cuenca, en el que participa la población que habita en el territorio de la cuenca, conducente al buen uso y manejo de tales recursos.
+ */
+!!@ technicalContact="Dirección de Bosques, Biodiversidad y Servicios Ecosistémicos"
+MODEL LADM_COL_v_1_0_0_Ext_PMC (es)
+AT "mailto:Obosques@minambiente.gov.co"
+VERSION "1.0.0"  =
+  IMPORTS LADM_COL_v_4_0_1_Nucleo;
+
+  DOMAIN
+
+    /** Tipo de derecho asociado con el POMCA
+     */
+    !!@ ili2db.dispName="Tipo de derecho"
+    PMC_DerechoTipo = (
+      /** De acuerdo con el artículo 24 del Decreto 1640 de 2012, la declaratoria del POMCA, se realizará mediante resolución motivada por cada Corporación Autónoma Regional y de Desarrollo Sostenible competente, y tiene por objeto dar inicio al proceso de ordenación de la cuenca hidrográfica.
+       */
+      !!@ ili2db.dispName=Delimitar
+      Declarar
+    );
+
+    /** Estado de los POMCA en los componentes del SIRH
+     */
+    PMC_EstadoTipo = (
+      /** Actividades inciales para la formulación del POMCA
+       */
+      !!@ ili2db.dispName="Actividades Previas"
+      Actividades_Previas,
+      /** En esta fase se conformará el equipo técnico pertinente para realizar y acompañar el proceso de ordenación y manejo de la cuenca hidrográfica, se definirá el programa de trabajo, la estrategia de socialización y participación, la recopilación y consolidación de información existente y la logística requerida, entre otros aspectos.
+       */
+      !!@ ili2db.dispName=Aprestamiento
+      Aprestamiento,
+      /** Como resultado de la fase de diagnóstico se definirá la estructura ecológica principal y la línea base de la cuenca hidrográfica en ordenación, la cual servirá de insumo para el desarrollo de la fase de prospectiva y zonificación ambiental.
+       */
+      !!@ ili2db.dispName=Diagnóstico
+      Diagnostico,
+      /** Fase en la cual se diseñarán los escenarios futuros del uso coordinado y sostenible del suelo, de las aguas, de la flora y de la fauna presente de la cuenca, el cual definirá en un horizonte no menor a diez (10) años el modelo de ordenación de la cuenca, con base en el cual se formulará el Plan de Ordenación y Manejo correspondiente.
+       */
+      !!@ ili2db.dispName="Prospectiva y Zonificación"
+      Prospectiva_y_Zonificacion,
+      /** En esta fase se definirá:
+       * 1. El componente programático.
+       * 2. Las medidas para la administración de los recursos naturales renovables.
+       * 3. El componente de gestión del riesgo.
+       */
+      !!@ ili2db.dispName=Formulación
+      Formulacion,
+      /** POMCA Aprobado
+       */
+      !!@ ili2db.dispName=Aprobado
+      Aprobado
+    );
+
+    /** De acuerdo con el Artículo 26 del Decreto 1640 de 2012, el proceso de ordenación de la cuenca hidrográfica, comprende las fases de:
+     * 1. Aprestamiento.
+     * 2. Diagnóstico.
+     * 3. Prospectiva y zonificación ambiental.
+     * 4. Formulación.
+     * 5. Ejecución.
+     * 6. Seguimiento y evaluación
+     */
+    PMC_FaseTipo = (
+      /** En esta fase se conformará el equipo técnico pertinente para realizar y acompañar el proceso de ordenación y manejo de la cuenca hidrográfica, se definirá el programa de trabajo, la estrategia de socialización y participación, la recopilación y consolidación de información existente y la logística requerida, entre otros aspectos.
+       */
+      !!@ ili2db.dispName=Aprestamiento
+      Aprestamiento,
+      /** Como resultado de la fase de diagnóstico se definirá la estructura ecológica principal y la línea base de la cuenca hidrográfica en ordenación, la cual servirá de insumo para el desarrollo de la fase de prospectiva y zonificación ambiental.
+       */
+      !!@ ili2db.dispName=Diagnóstico
+      Diagnostico,
+      /** Fase en la cual se diseñarán los escenarios futuros del uso coordinado y sostenible del suelo, de las aguas, de la flora y de la fauna presente de la cuenca, el cual definirá en un horizonte no menor a diez (10) años el modelo de ordenación de la cuenca, con base en el cual se formulará el Plan de Ordenación y Manejo correspondiente.
+       */
+      !!@ ili2db.dispName="Prospectiva y Zonificación"
+      Prospectiva_y_Zonificacion_Ambiental,
+      /** En esta fase se definirá:
+       * 1. El componente programático.
+       * 2. Las medidas para la administración de los recursos naturales renovables.
+       * 3. El componente de gestión del riesgo.
+       */
+      !!@ ili2db.dispName=Formulación
+      Formulacion,
+      /** Corresponde a la Corporaciones Autónomas Regionales y de Desarrollo Sostenible competentes coordinar la ejecución del Plan de Ordenación y Manejo de la Cuenca Hidrográfica, en el escenario temporal para el cual fue formulado, sin perjuicio de las competencias establecidas en el ordenamiento jurídico para la inversión y realización de las obras y acciones establecidas en la fase de formulación del Plan.
+       */
+      !!@ ili2db.dispName=Ejecución
+      Ejecucion,
+      /** Las Corporaciones Autónomas Regionales y de Desarrollo Sostenible realizarán anualmente el seguimiento y evaluación del Plan de Ordenación y Manejo de la Cuenca Hidrográfica, con base en el mecanismo que para tal fin sea definido el respectivo Plan, conforme a lo contemplado en la Guía Técnica para la Formulación del Plan de Ordenación y Manejo de la Cuenca Hidrográfica.
+       */
+      !!@ ili2db.dispName="Seguimiento y evaluación"
+      Seguimiento_y_evaluacion
+    );
+
+    /** Define el acto administrativo relacionado con el POMCA
+     */
+    !!@ ili2db.dispName="Tipo de fuente administrativa"
+    PMC_FuenteAdministrativaTipo
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_FuenteAdministrativaTipo = (
+      !!@ ili2db.dispName="Documento público"
+      Documento_Publico(
+        /** Decisión administrativa emitida por una autoridad administrativa en ejercicio de sus funciones, que tiene efectos jurídicos dentro de su ámbito de competencia. Las resoluciones se utilizan para regular, interpretar, aplicar o ejecutar disposiciones legales o reglamentarias y son de carácter obligatorio para las personas o entidades a las que se dirigen.
+         */
+        !!@ ili2db.dispName="(Documento público) Resolución"
+        Resolucion,
+        /** Acto legislativo o normativo de carácter local que es expedido por diferentes autoridades dentro de la estructura administrativa del país, tales como los concejales, alcaldes, personerías, contralorías y Juntas Administradoras Locales (JAL).
+         * 
+         * Incluye también:
+         * -  Acuerdos de Consejo Directivo - Acto normativo adoptado por el Consejo Directivo de una autoridad ambiental que establece directrices, normas o políticas relacionadas con la conservación y manejo de los recursos naturales.
+         * - Acuerdos de Junta Directiva - Decisión formal adoptada por la junta directiva de una entidad o autoridad ambiental.
+         */
+        !!@ ili2db.dispName="(Documento Público) Acuerdo"
+        Acuerdo
+      )
+    );
+
+    /** Tipo de responsabilidad asociado con el POMCA
+     */
+    !!@ ili2db.dispName="Tipo de responsabilidad"
+    PMC_ResponsabilidadTipo = (
+      /** Es responsabilidad de las Corporaciones Autónomas Regionales y de Desarrollo Sostenible administrar el Plan de Ordenación y Manejo de Cuencas Hidrográficas (POMCA). Esta administración implica liderar su formulación, ejecución, seguimiento, evaluación y actualización, garantizando la participación de los actores territoriales y sectoriales, y promoviendo una gestión integral del recurso hídrico y del territorio en concordancia con los principios de sostenibilidad ambiental.
+       */
+      !!@ ili2db.dispName=Administrar
+      Administrar,
+      /** Las Corporaciones Autónomas Regionales y de Desarrollo Sostenible deben elaborar la zonificación ambiental del Plan de Ordenación y Manejo de Cuencas Hidrográficas (POMCA).
+       */
+      !!@ ili2db.dispName=Zonificar
+      Zonificar
+    );
+
+    /** Categorías de ordenación y zonas de uso y manejo en la zonificación ambiental de cuencas hidrográficas de acuerdo con la Guía Técnica para la Formulación de los Planes de Ordenación y Manejo de Cuencas Hidrográficas.
+     */
+    PMC_ZonificacionTipo = (
+      /** Esta categoría incluye las áreas que deben ser objeto de especial protección ambiental de acuerdo con la legislación vigente y las que hacen parte de la estructura ecológica principal.
+       */
+      !!@ ili2db.dispName="Conservación y protección ambiental"
+      Conservacion_Y_Proteccion_Ambiental(
+        /** Son las identificadas para dar cumplimiento a los objetivos generales de conservación del país como se definen en el Decreto 2372 de 2010.
+         */
+        !!@ ili2db.dispName="(Conservación y protección ambiental) Áreas protegidas"
+        Areas_Protegidas(
+          /** Conformadas por:
+           * - Sistema de Parques Nacionales: parque nacional natural, área natural única, santuario de flora y fauna, vía parque. 
+           * - Reservas forestales protectoras nacionales 
+           * - Distritos de manejo integrado nacional
+           * - Reservas forestales protectoras regionales
+           * - Parque natural regional 
+           * - Distrito regional de manejo integrado 
+           * - Distrito de conservación de suelos 
+           * - Áreas de recreación 
+           * - Reservas naturales de la sociedad civil
+           */
+          !!@ ili2db.dispName="Áreas del SINAP"
+          Areas_del_SINAP
+        ),
+        /** La protección, es una estrategia de conservación in situ que aporta a la planeación y manejo de los recursos naturales renovables y al cumplimiento de los objetivos generales de conservación del país como se define en el Decreto 2372 de 2010.
+         */
+        !!@ ili2db.dispName="(Conservación y protección ambiental) Áreas de Protección"
+        Areas_de_Proteccion(
+          /** Conformadas por las áreas: 
+           * - De carácter internacional: sitios Ramsar, reservas de biósfera, AICAS y patrimonio de la humanidad. 
+           * - De carácter nacional: reservas forestales de Ley 2da de 1959, otras áreas declaradas por las corporaciones, departamentos, áreas metropolitanas, distritos y municipios.
+           * - Suelos de protección que hacen parte de los planes y esquemas de ordenamiento territorial (POT) debidamente adoptados.
+           */
+          !!@ ili2db.dispName="Áreas complementarias para la conservación"
+          Areas_Complementarias_Conservacion,
+          /** Conformadas por: 
+           * - Ecosistemas estratégicos: páramos, humedales, nacimientos de aguas, zonas de recarga de acuíferos, bosques secos, manglares, entre otros. 
+           * - Otras subzonas de importancia ambiental identificadas de interés para la protección de la biodiversidad y los servicios ecosistémicos en la cuenca.
+           */
+          !!@ ili2db.dispName="Áreas  de importancia ambiental"
+          Areas_Importancia_Ambiental,
+          /** Áreas de patrimonio histórico, cultural y arqueológico, territorios étnicos.
+           */
+          !!@ ili2db.dispName="Áreas con reglamentación especial"
+          Areas_Reglamentacion_Especial,
+          /** Zonas delimitadas como de amenaza alta por movimientos en masa, inundaciones, avenidas torrenciales, actividad volcánica, e incendios forestales, entre otros.
+           */
+          !!@ ili2db.dispName="Áreas de amenazas naturales"
+          Areas_Amenazas_Naturales
+        ),
+        /** La restauración, se define como el restablecimiento parcial o total de la composición, estructura y función de la biodiversidad, que haya sido alterada o degradada.
+         */
+        !!@ ili2db.dispName="(Conservación y protección ambiental) Áreas de Restauración"
+        Areas_de_Restauracion(
+          /** Corresponden a áreas complementarias para la conservación o áreas de importancia ambiental que han sido  degradadas, entre otras, con el fin de restaurar su estructura y función.
+           */
+          !!@ ili2db.dispName="Áreas de restauración ecológica"
+          Areas_Restauracion_Ecologica,
+          /** Áreas que han sido degradadas y que pueden ser recuperados sus atributos funcionales o estructurales.
+           */
+          !!@ ili2db.dispName="Áreas de rehabilitación"
+          Areas_de_Rehabilitacion
+        )
+      ),
+      /** Es aquella donde se realizará la producción sostenible; las zonas y subzonas de manejo no sólo son producto de la identificación de la capacidad de uso de la tierra sino que responden al resultado de la aplicación de los indicadores planteados en los subcomponentes físico, biótico, socioeconómico y las leyes, decretos y normativa vigente establecida en el país. Dentro de esta categoría de uso múltiple se encuentran las zonas de uso y manejo denominadas restauración, áreas para la producción agrícola, ganadera y de uso sostenible de recursos naturales y las áreas urbanas.
+       */
+      !!@ ili2db.dispName="Uso múltiple"
+      Uso_Multiple(
+        !!@ ili2db.dispName="(Uso múltiple) Áreas de Restauración"
+        Areas_de_Restauracion(
+          /** Áreas transformadas que presentan deterioro ambiental y que pueden ser recuperadas para continuar con el tipo de uso múltiple definido de acuerdo a su aptitud.
+           */
+          !!@ ili2db.dispName="Áreas de recuperación para el uso  múltiple"
+          Area_Recuperacion_Uso_Multiple
+        ),
+        !!@ ili2db.dispName="Áreas para la Producción Agrícola, Ganadera y de Uso Sostenible"
+        Areas_de_Produccion_Y_Uso_Sostenible(
+          /** Son áreas que pueden tener cualquiera de  los siguientes usos, definidos por las categorías de capacidad 1 a 3: Cultivos transitorios intensivos Cultivos transitorios semiintensivos Cultivos permanentes  intensivos Cultivos permanentes semi intensivos.
+           */
+          !!@ ili2db.dispName="Áreas agrícolas"
+          Areas_Agricolas,
+          /** Son áreas que pueden tener los demás usos propuestos contenidos en la tabla “Factores de clasificación capacidad de uso” del anexo A identificados en el diagnóstico (clases 4 a 7). Se pueden desarrollar actividades agrícolas, pecuarias y forestales de manera independiente o combinada.
+           */
+          !!@ ili2db.dispName="Áreas  agrosilvopastoriles"
+          Areas_Agrosilvopastoriles
+        ),
+        !!@ ili2db.dispName="(Uso múltiple) Áreas Urbanas"
+        Areas_Urbanas(
+          /** Áreas a que se refiere el artículo 31 de la Ley 388 de 1997.
+           */
+          !!@ ili2db.dispName="Áreas urbanas municipales y distritales"
+          Areas_Urbanas_Municipales_y_Distritales
+        )
+      ),
+      /** Cuando no corresponda a ninguno de los dominios definidos, seleccione la opción Otro y diligenciar el campo Detalle_Zona indicando la zona que corresponda.
+       */
+      !!@ ili2db.dispName=Otro
+      Otro
+    );
+
+  /** El Plan de Manejo y Ordenamiento de una Cuenca, POMCA, es el planeamiento del uso y manejo sostenible de sus recursos naturales renovables, de manera que se consiga mantener o restablecer un adecuado equilibrio entre el aprovechamiento económico de tales recursos y la conservación de la estructura físico-biótica de la cuenca y particularmente de sus recursos hídricos.
+   */
+  TOPIC PMC
+  EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo =
+    BASKET OID AS INTERLIS.UUIDOID;
+    OID AS INTERLIS.UUIDOID;
+    DEPENDS ON LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo;
+
+    /** Agrupación de interesados en el POMCA
+     */
+    !!@ ili2db.dispName="Agrupación de interesados"
+    CLASS PMC_AgrupacionInteresados
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_AgrupacionInteresados =
+    END PMC_AgrupacionInteresados;
+
+    /** Establece el tipo de Derecho asociado con el POMCA
+     */
+    !!@ ili2db.dispName=Derecho
+    CLASS PMC_Derecho
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_DRR =
+      /** Establece el tipo de Derecho asociado con el POMCA
+       */
+      Tipo : MANDATORY LADM_COL_v_1_0_0_Ext_PMC.PMC_DerechoTipo;
+    END PMC_Derecho;
+
+    /** Identifica el acto administrativo con el cual se sustenta el POMCA
+     */
+    !!@ ili2db.dispName="Fuente administrativa"
+    CLASS PMC_FuenteAdministrativa
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_FuenteAdministrativa =
+      Tipo (EXTENDED) : MANDATORY LADM_COL_v_1_0_0_Ext_PMC.PMC_FuenteAdministrativaTipo;
+    END PMC_FuenteAdministrativa;
+
+    !!@ ili2db.dispName="Fuente espacial"
+    CLASS PMC_FuenteEspacial
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_FuenteEspacial =
+    END PMC_FuenteEspacial;
+
+    /** Interesado asociado con los DRR del POMCA
+     */
+    CLASS PMC_Interesado
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_Interesado =
+      Observacion : TEXT*255;
+    END PMC_Interesado;
+
+    CLASS PMC_NU_AgrupacionUnidadesEspaciales
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_AgrupacionUnidadesEspaciales =
+    END PMC_NU_AgrupacionUnidadesEspaciales;
+
+    CLASS PMC_NU_CadenaCarasLimite
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_CadenaCarasLimite =
+    END PMC_NU_CadenaCarasLimite;
+
+    CLASS PMC_NU_Punto
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_Punto =
+    END PMC_NU_Punto;
+
+    /** Establece el tipo de Responsabilidad asociado con el POMCA
+     */
+    !!@ ili2db.dispName=Responsabilidad
+    CLASS PMC_Responsabilidad
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_DRR =
+      /** Establece el tipo de Responsabilidad asociado con el POMCA
+       */
+      Tipo : MANDATORY LADM_COL_v_1_0_0_Ext_PMC.PMC_ResponsabilidadTipo;
+    END PMC_Responsabilidad;
+
+    !!@ ili2db.dispName="(PMC) UAB Área del POMCA"
+    CLASS PMC_UAB_AreaPOMCA
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_UnidadAdministrativaBasica =
+      /** Identificador interno con el cual se identifica el Plan de Ordenamiento y Manejo de Cuencas Hidrográficas (POMCA)
+       */
+      !!@ ili2db.dispName="Código del POMCA"
+      Identificador : MANDATORY TEXT*9;
+      /** Nombre del Plan de Ordenamiento y Manejo de Cuencas Hidrográficas (POMCA)
+       */
+      !!@ ili2db.dispName="Nombre del POMCA"
+      Nombre_POMCA : MANDATORY TEXT*255;
+      /** Nombre del estado en la cual se encuentra el Plan de Ordenamiento y Manejo de Cuencas Hidrográficas (POMCA)
+       */
+      Estado : MANDATORY LADM_COL_v_1_0_0_Ext_PMC.PMC_EstadoTipo;
+      /** Nombre de la fase en la cual se encuentra el Plan de Ordenamiento y Manejo de Cuencas Hidrográficas (POMCA)
+       */
+      Fase : LADM_COL_v_1_0_0_Ext_PMC.PMC_FaseTipo;
+      /** Nombre del Área Hidrográfica donde se ubica el Plan de Ordenamiento y Manejo de Cuencas Hidrográficas (POMCA)
+       */
+      !!@ ili2db.dispName="Área Hidrográfica"
+      Area_Hidrografica : MANDATORY TEXT*255;
+      /** Nombre de la Zona Hidrográfica donde se ubica el Plan de Ordenamiento y Manejo de Cuencas Hidrográficas (POMCA)
+       */
+      !!@ ili2db.dispName="Zona Hidrográfica"
+      Zona_Hidrografica : MANDATORY TEXT*255;
+      /** Nombre de la Subzona Hidrográfica donde se ubica el Plan de Ordenamiento y Manejo de Cuencas
+       * Hidrográficas (POMCA)
+       */
+      !!@ ili2db.dispName="Subzona Hidrográfica"
+      Subzona_Hidrografica : MANDATORY TEXT*255;
+      UNIQUE Identificador;
+    END PMC_UAB_AreaPOMCA;
+
+    CLASS PMC_UAB_Zonificacion
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_UnidadAdministrativaBasica =
+      /** Zonificación de uso permitida para el Plan de Manejo y Ordenamiento de Cuencas Hidrográficas (POMCA)
+       */
+      !!@ ili2db.dispName="Tipo de zona"
+      Tipo_Zona : MANDATORY LADM_COL_v_1_0_0_Ext_PMC.PMC_ZonificacionTipo;
+      /** Cuando el tipo de zona corresponda a Otro diligenciar el detalle a cuál corresponda
+       */
+      !!@ ili2db.dispName="Detalle de la zona"
+      Detalle_Zona : TEXT*1000;
+    END PMC_UAB_Zonificacion;
+
+    /** Unidad Espacial del POMCA delimitado
+     */
+    CLASS PMC_UE_AreaPOMCA
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_UnidadEspacial =
+      /** Área calculada en hectáreas del POMCA
+       */
+      !!@ ili2db.dispName="Área en hetáreas del POMCA"
+      Area_Ha : MANDATORY 0.0000 .. 200000000.0000;
+    END PMC_UE_AreaPOMCA;
+
+    /** Unidad Espacial de la zonificación del POMCA
+     */
+    CLASS PMC_UE_Zonificacion
+    EXTENDS LADM_COL_v_4_0_1_Nucleo.LADM_Nucleo.COL_UnidadEspacial =
+      /** Área calculada en hectáreas de la zonificación del POMCA
+       */
+      Area_Ha : 0.0000 .. 200000000.0000;
+    END PMC_UE_Zonificacion;
+
+    ASSOCIATION PMC_AreaPOMCA_Zonificacion =
+      UAB_Zonificacion -- {0..*} PMC_UAB_Zonificacion;
+      UAB_AreaPOMCA -- {1} PMC_UAB_AreaPOMCA;
+    END PMC_AreaPOMCA_Zonificacion;
+
+  END PMC;
+
+END LADM_COL_v_1_0_0_Ext_PMC.

@@ -1,0 +1,7 @@
+{
+    "MODEL_DIR": "/opt/airflow/otl/modelos/modelo_pmc",
+    "ETL_DIR": "/opt/airflow/otl/etl/etl_pmc",
+    "CONFIG_PATH": "/opt/airflow/otl/etl/etl_pmc/config.json",
+    "TEMP_FOLDER": "/opt/airflow/otl/etl/etl_pmc/temp",
+    "GX_DIR": "/opt/airflow/otl/etl/etl_pmc/gx"
+}

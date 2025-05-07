@@ -1,0 +1,7 @@
+data_asset_type: Dataset
+expectations: []
+meta:
+  great_expectations_version: 0.15.50
+  notes:
+    format: markdown
+    content: "Expectations generadas autom\xE1ticamente para el esquema insumos"

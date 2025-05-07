@@ -1,0 +1,5 @@
+{
+    "ILI2DB_JAR_PATH": "/opt/airflow/otl/libs/ili2pg-5.1.0.jar",
+    "EPSG_SCRIPT": "/opt/airflow/otl/scripts/insert_ctm12_pg.sql",
+    "XTF_DIR": "/opt/airflow/otl/output/xtf"
+}
