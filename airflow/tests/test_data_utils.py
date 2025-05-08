@@ -324,11 +324,11 @@ class TestDataUtils(unittest.TestCase):
         os.makedirs(folder, exist_ok=True)
         
         self.cfg["db"] = {  # Necesario para _obtener_engine_sqlalchemy
-            "user": "test_user",
-            "password": "test_pass",
-            "host": "localhost",
-            "port": "5432",
-            "db_name": "test_db"
+            "user": TEST_DB_USER,
+            "password": TEST_DB_PASSWORD,
+            "host": TEST_DB_HOST,
+            "port": TEST_DB_PORT,
+            "db_name": TEST_DB_NAME
         }
 
         fake_ti = MagicMock()
@@ -483,7 +483,7 @@ class TestDataUtils(unittest.TestCase):
     @patch("utils.data_utils.pd.DataFrame.to_sql")
     @patch("utils.data_utils.pd.read_excel")
     def test_import_excel_to_db2_success(self, mock_read_excel, mock_to_sql):
-        db_config = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db_config = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         dummy_df = pd.DataFrame({
             "Id del área protegida": [1, 2],
             "Objeto del acto": ["Declaratoria", "Other"],
@@ -499,7 +499,7 @@ class TestDataUtils(unittest.TestCase):
 
 
     def test_import_excel_to_db_success(self):
-        db_config = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db_config = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         df_general = pd.DataFrame({"Id del área protegida": [1, 2], "A": [10, 20]})
         df_actos = pd.DataFrame({
             "Id del área protegida": [1, 2],
@@ -515,7 +515,7 @@ class TestDataUtils(unittest.TestCase):
                 self.assertEqual(mock_read_excel.call_count, 2)
     
     def test_import_excel_to_db_error_actos(self):
-        db_config = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db_config = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         df_general = pd.DataFrame({"Id del área protegida": [1]})
 
         with patch("utils.data_utils.pd.read_excel", side_effect=[df_general, Exception("fallo actos")]):
@@ -524,7 +524,7 @@ class TestDataUtils(unittest.TestCase):
             self.assertIn("fallo actos", str(cm.exception).lower())
 
     def test_import_excel_to_db_error_merge(self):
-        db_config = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db_config = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         df_general = pd.DataFrame({"Id del área protegida": [1]})
         df_actos = pd.DataFrame({"Id del área protegida": [1], "Objeto del acto": ["Declaratoria"]})
 
@@ -535,7 +535,7 @@ class TestDataUtils(unittest.TestCase):
             self.assertIn("merge error", str(cm.exception).lower())
 
     def test_import_excel_to_db_error_to_sql(self):
-        db_config = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db_config = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         df_general = pd.DataFrame({"Id del área protegida": [1]})
         df_actos = pd.DataFrame({
             "Id del área protegida": [1],
@@ -581,7 +581,7 @@ class TestDataUtils(unittest.TestCase):
     # ──────────────────────────────────────────────────────────────────
     @patch("utils.data_utils.pd.read_excel")
     def test_import_excel_to_db2_filtrado_actos(self, mock_read_excel):
-        db = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         df = pd.DataFrame({
             "Id del área protegida": [1, 2, 3, 4],
             "Objeto del acto": ["Declaratoria", "Other", "Declaratoria", "Declaratoria"],
@@ -624,7 +624,7 @@ class TestDataUtils(unittest.TestCase):
     @patch("utils.data_utils.sqlalchemy.create_engine")
     @patch("utils.data_utils.pd.read_excel")
     def test_import_excel_to_db_choose_row_default(self, mock_read_excel, mock_engine):
-        db = {"user": "u", "password": "p", "host": "h", "port": "5432", "db_name": "d"}
+        db = {"user": "u", "password": TEST_DB_PASSWORD, "host": "h", "port": "5432", "db_name": "d"}
         df_general = pd.DataFrame({"Id del área protegida": [1]})
         df_actos = pd.DataFrame({
             "Id del área protegida": [1, 1],
