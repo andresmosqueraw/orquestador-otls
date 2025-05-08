@@ -30,4 +30,7 @@ USER airflow
 WORKDIR /app
 
 # Copiamos nuestro código fuente (DAGs y tests) dentro del contenedor
-COPY . /app
+# Only copy necessary files and directories, avoiding sensitive data
+COPY dags/ /app/dags/
+COPY utils/ /app/utils/
+COPY config.json /app/
