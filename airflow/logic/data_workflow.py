@@ -33,7 +33,7 @@ def ejecutar_importar_estructura_intermedia(cfg):
             logging.info("Estructura_intermedia importada por función interna.")
     except Exception as e:
         logging.error(f"Error importando estructura_intermedia: {e}")
-        raise Exception(f"Error importando estructura_intermedia: {e}")
+        raise RuntimeError(f"Error importando estructura_intermedia: {e}")   
 
 def ejecutar_migracion_datos_estructura_intermedia(cfg):
     logging.info("Migrando datos a estructura_intermedia...")
@@ -47,7 +47,7 @@ def ejecutar_migracion_datos_estructura_intermedia(cfg):
             logging.info("Migración a estructura_intermedia completada por función interna.")
     except Exception as e:
         logging.error(f"Error migrando a estructura_intermedia: {e}")
-        raise Exception(f"Error migrando a estructura_intermedia: {e}")
+        raise RuntimeError(f"Error migrando a estructura_intermedia: {e}")
 
 def ejecutar_validacion_datos(cfg):
     logging.info("Validando datos en la estructura intermedia...")
