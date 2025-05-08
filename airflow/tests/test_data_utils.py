@@ -570,7 +570,7 @@ class TestDataUtils(unittest.TestCase):
     # import_excel_to_db2  → leer error (líneas 457-460)
     # ──────────────────────────────────────────────────────────────────
     def test_import_excel_to_db2_read_error(self):
-        db = {"user":"u","password":"p","host":"h","port":"5432","db_name":"d"}
+        db = {"user":"u","password": TEST_DB_PASSWORD,"host":"h","port":"5432","db_name":"d"}
         with patch("utils.data_utils.pd.read_excel", side_effect=Exception("read-fail")):
             with self.assertRaises(Exception) as cm:
                 utils.data_utils.import_excel_to_db2(db, "fail.xlsx", "table_x")
@@ -609,7 +609,7 @@ class TestDataUtils(unittest.TestCase):
     # import_excel_to_db2  → fallo en to_sql (líneas 491-494)
     # ──────────────────────────────────────────────────────────────────
     def test_import_excel_to_db2_to_sql_failure(self):
-        db = {"user":"u","password":"p","host":"h","port":"5432","db_name":"d"}
+        db = {"user":"u","password": TEST_DB_PASSWORD,"host":"h","port":"5432","db_name":"d"}
         df = pd.DataFrame({"x":[1]})
         with patch("utils.data_utils.pd.read_excel", return_value=df), \
              patch("utils.data_utils.sqlalchemy.create_engine"), \
@@ -639,7 +639,7 @@ class TestDataUtils(unittest.TestCase):
     # ──────────────────────────────────────────────────────────────────
     @patch("utils.data_utils.subprocess.run", side_effect=subprocess.CalledProcessError(2, "cmd", stderr="boom"))
     def test_importar_shp_a_postgres_subprocess_error(self, mock_run):
-        db = {"host":"h","port":"p","db_name":"d","user":"u","password":"pw"}
+        db = {"host":"h","port":"p","db_name":"d","user":"u","password": TEST_DB_PASSWORD}
         with self.assertRaises(Exception) as cm:
             utils.data_utils._importar_shp_a_postgres(db, "dummy.shp", "insumos.tbl")
         self.assertIn("boom", str(cm.exception).lower())
@@ -649,7 +649,7 @@ class TestDataUtils(unittest.TestCase):
     # ──────────────────────────────────────────────────────────────────
     @patch("utils.data_utils.subprocess.run", side_effect=subprocess.CalledProcessError(2, "cmd", stderr="geo-err"))
     def test_importar_geojson_a_postgres_subprocess_error(self, mock_run):
-        db = {"host":"h","port":"p","db_name":"d","user":"u","password":"pw"}
+        db = {"host":"h","port":"p","db_name":"d","user":"u","password": TEST_DB_PASSWORD}
         with self.assertRaises(Exception) as cm:
             utils.data_utils._importar_geojson_a_postgres(db, "d.geojson", "insumos.t")
         self.assertIn("geo-err", str(cm.exception).lower())
