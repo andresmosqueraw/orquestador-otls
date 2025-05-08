@@ -52,7 +52,7 @@ def _obtener_engine_sqlalchemy(cfg):
         engine = sqlalchemy.create_engine(url)
         return engine
     except Exception as e:
-        raise Exception(f"Error creando engine SQLAlchemy: {e}")
+        raise RuntimeError(f"Error creando engine SQLAlchemy: {e}")
 
 def _obtener_tablas_esquema(engine, schema):
     logging.info("Iniciando _obtener_tablas_esquema...")

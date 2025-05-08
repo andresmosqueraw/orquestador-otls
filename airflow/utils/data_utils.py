@@ -42,7 +42,7 @@ def ejecutar_ogr2ogr(command, error_context):
     except subprocess.CalledProcessError as e:
         msg = f"Error en {error_context}: {e.stderr}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
 # ---------------------------------------------------------------------------
 # Funciones de descarga y validación de insumos desde la web y respaldo local
@@ -187,14 +187,14 @@ def procesar_insumos_descargados(cfg, **context):
     insumos_totales = {**insumos_web, **insumos_local}
 
     if not insumos_totales:
-        raise Exception("❌ No se encontraron insumos para procesar.")
+        raise RuntimeError("❌ No se encontraron insumos para procesar.")
 
     resultados = []
     for key, file_path in insumos_totales.items():
         if not file_path or not os.path.exists(file_path):
             msg = f"❌ Archivo para '{key}' no encontrado: {file_path}"
             logging.error(msg)
-            raise Exception(msg)
+            raise RuntimeError(msg)
 
         extract_folder = os.path.join(temp_folder, key)
         os.makedirs(extract_folder, exist_ok=True)
@@ -216,7 +216,7 @@ def procesar_insumos_descargados(cfg, **context):
             except Exception as e:
                 msg = f"❌ Error copiando '{file_path}' a '{destino}': {e}"
                 logging.error(msg)
-                raise Exception(msg)
+                raise RuntimeError(msg)
         else:
             logging.warning(f"⚠ Formato '{ext}' no soportado para '{file_path}', se omite.")
 
@@ -257,11 +257,11 @@ def _procesar_zip(key, file_path, extract_folder):
         except Exception as e2:
             msg = f"❌ Error tratando '{file_path}' como GeoJSON: {e2}"
             logging.error(msg)
-            raise Exception(msg)
+            raise RuntimeError(msg)
     except Exception as e:
         msg = f"❌ Error procesando '{file_path}': {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
 # ---------------------------------------------------------------------------
 # Funciones de importación a PostgreSQL
@@ -280,7 +280,7 @@ def ejecutar_importar_shp_a_postgres(cfg, **kwargs):
     if not insumos_info or not isinstance(insumos_info, list):
         msg = "No se encontró información válida de insumos en XCom."
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     config = leer_configuracion(cfg)
     db_config = config["db"]
@@ -316,7 +316,7 @@ def ejecutar_importacion_general_a_postgres(cfg, **kwargs):
     if not insumos_info or not isinstance(insumos_info, list):
         msg = "❌ No se encontró información válida de insumos en XCom."
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     engine = _obtener_engine_sqlalchemy(cfg)
     config = leer_configuracion(cfg)
@@ -351,7 +351,7 @@ def ejecutar_importacion_general_a_postgres(cfg, **kwargs):
         if not shp_files and not geojson_files and not xlsx_files:
             msg = f"❌ El insumo '{key}' no contiene archivos compatibles."
             logging.error(msg)
-            raise Exception(msg)
+            raise RuntimeError(msg)
 
         for shp_file in shp_files:
             tname = f"insumos.{key}"
@@ -446,7 +446,7 @@ def _importar_excel_a_postgres(cfg, engine, xlsx_file, table_name, schema="insum
     except Exception as e:
         msg = f"Error importando Excel '{xlsx_file}': {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
 def import_excel_to_db2(db_config, excel_path, table_name, sheet_name=None):
     """Importa Excel a 'insumos.table_name' usando pandas (logs estilo RL2)."""
@@ -491,7 +491,7 @@ def import_excel_to_db(db_config, excel_file, key):
     except Exception as e:
         msg = f"Error leyendo la hoja 'General' de {excel_file}: {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     try:
         df_actos = pd.read_excel(excel_file, sheet_name="Actos", index_col=None).reset_index(drop=True)
@@ -499,7 +499,7 @@ def import_excel_to_db(db_config, excel_file, key):
     except Exception as e:
         msg = f"Error leyendo la hoja 'Actos' de {excel_file}: {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     valid_objetos = ["Declaratoria", "Registro RNSC", "Declaratoria y adopcion de plan de manejo"]
 
@@ -513,7 +513,7 @@ def import_excel_to_db(db_config, excel_file, key):
     except Exception as e:
         msg = f"Error reduciendo 'Actos': {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     try:
         df_merged = pd.merge(df_general, df_actos_reducido, on="Id del área protegida", how="left")
@@ -521,7 +521,7 @@ def import_excel_to_db(db_config, excel_file, key):
     except Exception as e:
         msg = f"Error realizando merge: {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
     table_name = f"insumos.{shorten_identifier(key)}_excel"
     engine = sqlalchemy.create_engine(
@@ -533,7 +533,7 @@ def import_excel_to_db(db_config, excel_file, key):
     except Exception as e:
         msg = f"Error insertando Excel en {table_name}: {e}"
         logging.error(msg)
-        raise Exception(msg)
+        raise RuntimeError(msg)
 
 def shorten_identifier(identifier):
     """

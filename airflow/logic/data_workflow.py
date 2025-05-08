@@ -56,13 +56,13 @@ def ejecutar_validacion_datos(cfg):
         resultado = validar_estructura()
         if resultado is not None:
             if isinstance(resultado, bool) and not resultado:
-                raise Exception("Validación de datos falló (retornó False).")
+                raise RuntimeError("Validación de datos falló (retornó False).")
             elif isinstance(resultado, str):
                 ejecutar_sql(cfg, resultado)
         logging.info("Validación de datos completada.")
     except Exception as e:
         logging.error(f"Error validando datos: {e}")
-        raise Exception(f"Error validando datos: {e}")
+        raise RuntimeError(f"Error validando datos: {e}")
 
 def ejecutar_migracion_datos_ladm(cfg):
     logging.info("Migrando datos al modelo LADM...")
@@ -76,4 +76,4 @@ def ejecutar_migracion_datos_ladm(cfg):
             logging.info("Migración a LADM completada por función interna.")
     except Exception as e:
         logging.error(f"Error migrando a LADM: {e}")
-        raise Exception(f"Error migrando a LADM: {e}")
+        raise RuntimeError(f"Error migrando a LADM: {e}")

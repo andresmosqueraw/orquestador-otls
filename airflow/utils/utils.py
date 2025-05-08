@@ -26,7 +26,7 @@ def leer_configuracion(cfg) -> Dict:
         raise FileNotFoundError(f"Archivo no encontrado: {e}") from e
     except Exception as e:
         logging.exception("Error leyendo la configuración.")
-        raise Exception(f"Error leyendo la configuración: {e}") from e
+        raise RuntimeError(f"Error leyendo la configuración: {e}") from e
 
 def limpiar_carpeta_temporal(cfg) -> None:
     """
@@ -49,7 +49,7 @@ def limpiar_carpeta_temporal(cfg) -> None:
                     shutil.rmtree(item_path)
             except Exception as e:
                 logging.exception(f"Error eliminando {item_path}.")
-                raise Exception(f"Error eliminando {item_path}: {e}") from e
+                raise RuntimeError(f"Error eliminando {item_path}: {e}") from e
 
     os.makedirs(TEMP_FOLDER, exist_ok=True)
     logging.info("Carpeta temporal limpiada y (re)creada correctamente.")

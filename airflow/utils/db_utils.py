@@ -30,7 +30,7 @@ def ejecutar_sql(cfg, sql, params=None):
         conn.rollback()
         logging.error(f"Error ejecutando SQL: {e}")
         # Lanzamos excepción para marcar tarea fallida
-        raise Exception(f"Error ejecutando SQL: {e}")
+        raise RuntimeError(f"Error ejecutando SQL: {e}")
     finally:
         conn.close()
 
@@ -57,11 +57,11 @@ def validar_conexion_postgres(cfg):
     except psycopg2.Error as e:
         logging.error(f"Error en la conexión: {e}")
         logging.error("\033[91m❌ validar_conexion_postgres falló.\033[0m")
-        raise Exception(f"Error en la conexión: {e}")
+        raise RuntimeError(f"Error en la conexión: {e}")
     except Exception as ex:
         logging.error(f"Error: {ex}")
         logging.error("\033[91m❌ validar_conexion_postgres falló.\033[0m")
-        raise Exception(f"Error validando la conexión: {ex}")
+        raise RuntimeError(f"Error validando la conexión: {ex}")
     
 def revisar_existencia_db(cfg):
     """Verifica si la base de datos ya existe y define el flujo de ejecución en Airflow."""
@@ -93,7 +93,7 @@ def revisar_existencia_db(cfg):
     except Exception as e:
         logging.error(f"Error revisando existencia de la base de datos: {e}")
         logging.error("\033[91m❌ revisar_existencia_db falló.\033[0m")
-        raise Exception(f"Error revisando existencia de la base de datos: {e}")
+        raise RuntimeError(f"Error revisando existencia de la base de datos: {e}")
 
 def crear_base_datos(cfg):
     """Crea la base de datos si no existe."""
@@ -118,7 +118,7 @@ def crear_base_datos(cfg):
     except Exception as e:
         logging.error(f"Error creando base de datos: {e}")
         logging.error("\033[91m❌ crear_base_datos falló.\033[0m")
-        raise Exception(f"Error creando base de datos: {e}")
+        raise RuntimeError(f"Error creando base de datos: {e}")
 
 def adicionar_extensiones(cfg):
     """Adiciona las extensiones PostGIS y UUID a la base de datos."""
@@ -145,7 +145,7 @@ def adicionar_extensiones(cfg):
     except Exception as e:
         logging.error(f"Error adicionando extensiones: {e}")
         logging.error("\033[91m❌ adicionar_extensiones falló.\033[0m")
-        raise Exception(f"Error adicionando extensiones: {e}")
+        raise RuntimeError(f"Error adicionando extensiones: {e}")
        
 def restablecer_esquema_insumos(cfg):
     logging.info("Restableciendo esquema 'insumos'...")
@@ -154,7 +154,7 @@ def restablecer_esquema_insumos(cfg):
         logging.info("Esquema 'insumos' restablecido correctamente.")
     except Exception as e:
         logging.error(f"Error restableciendo esquema 'insumos': {e}")
-        raise Exception(f"Error restableciendo esquema 'insumos': {e}")
+        raise RuntimeError(f"Error restableciendo esquema 'insumos': {e}")
 
 
 def restablecer_esquema_estructura_intermedia(cfg):
@@ -164,7 +164,7 @@ def restablecer_esquema_estructura_intermedia(cfg):
         logging.info("Esquema 'estructura_intermedia' restablecido correctamente.")
     except Exception as e:
         logging.error(f"Error restableciendo esquema 'estructura_intermedia': {e}")
-        raise Exception(f"Error restableciendo esquema 'estructura_intermedia': {e}")
+        raise RuntimeError(f"Error restableciendo esquema 'estructura_intermedia': {e}")
 
 
 def restablecer_esquema_ladm(cfg):
@@ -174,4 +174,4 @@ def restablecer_esquema_ladm(cfg):
         logging.info("Esquema 'ladm' restablecido correctamente.")
     except Exception as e:
         logging.error(f"Error restableciendo esquema 'ladm': {e}")
-        raise Exception(f"Error restableciendo esquema 'ladm': {e}")
+        raise RuntimeError(f"Error restableciendo esquema 'ladm': {e}")

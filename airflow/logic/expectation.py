@@ -28,7 +28,7 @@ def reporte_expectativas_insumos(yaml_filename, schema, cfg):
         logging.info("Reporte de validación de estructura:\n" + final_report)
         if "❌" in final_report:
             logging.error("\033[91m❌ reporte de expectativas falló (diferencias encontradas).\033[0m")
-            raise Exception(f"Fallo en las expectativas del esquema '{schema}'.\n{final_report}")
+            raise RuntimeError(f"Fallo en las expectativas del esquema '{schema}'.\n{final_report}")
         logging.info("\033[92m✔ reporte de expectativas finalizó sin errores.\033[0m")
         return final_report
     except Exception as e:

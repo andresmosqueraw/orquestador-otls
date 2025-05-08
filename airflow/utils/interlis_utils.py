@@ -50,11 +50,11 @@ def exportar_datos_ladm(cfg):
     except subprocess.CalledProcessError as e:
         logging.error(f"Error exportando XTF: {e.stderr}")
         logging.error(f"\033[91m❌ exportar_datos_ladm para {logs["nombre_etl"]}falló.\033[0m")
-        raise Exception(f"Error exportando XTF: {e.stderr}")
+        raise RuntimeError(f"Error exportando XTF: {e.stderr}")
     except Exception as ex:
         logging.error(f"Error en exportar_datos_ladm: {ex}")
         logging.error(f"\033[91m❌ exportar_datos_ladm para {logs["nombre_etl"]}falló.\033[0m")
-        raise Exception(f"Error exportando XTF: {ex}")
+        raise RuntimeError(f"Error exportando XTF: {ex}")
 
 def importar_esquema_ladm(cfg):
     """
@@ -111,4 +111,4 @@ def importar_esquema_ladm(cfg):
         logging.info(f"✔ importar_esquema_ladm para {logs['nombre_etl']} finalizó sin errores.")
     except subprocess.CalledProcessError as e:
         logging.error("❌ importar_esquema_ladm para {0} falló.".format(logs['nombre_etl']))
-        raise Exception(f"Error importando {logs['nombre_etl']}: {e}")
+        raise RuntimeError(f"Error importando {logs['nombre_etl']}: {e}")
