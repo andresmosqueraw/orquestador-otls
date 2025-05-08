@@ -3,6 +3,11 @@ import unittest
 from unittest.mock import patch, MagicMock, call
 import psycopg2
 import logging
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from utils.db_utils import (
     ejecutar_sql,
@@ -15,14 +20,21 @@ from utils.db_utils import (
     restablecer_esquema_ladm
 )
 
+# Test credentials from environment variables with defaults for testing
+TEST_DB_USER = os.getenv('TEST_DB_USER', 'postgres')
+TEST_DB_PASSWORD = os.getenv('TEST_DB_PASSWORD', 'postgres')
+TEST_DB_HOST = os.getenv('TEST_DB_HOST', 'localhost')
+TEST_DB_PORT = os.getenv('TEST_DB_PORT', '5432')
+TEST_DB_NAME = os.getenv('TEST_DB_NAME', 'test_db')
+
 # Configuración ficticia para los tests
 fake_config = {
     "db": {
-        "host": "localhost",
-        "port": 5432,
-        "user": "postgres",
-        "password": "postgres",
-        "db_name": "test_db"
+        "host": TEST_DB_HOST,
+        "port": TEST_DB_PORT,
+        "user": TEST_DB_USER,
+        "password": TEST_DB_PASSWORD,
+        "db_name": TEST_DB_NAME
     }
 }
 

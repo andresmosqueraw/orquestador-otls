@@ -7,6 +7,10 @@ import pandas as pd
 import sqlalchemy
 import yaml
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from utils.gx_utils import (
     _cargar_expectativas_desde_yaml,
@@ -18,6 +22,13 @@ from utils.gx_utils import (
     _comparar_columnas_exactas,
     _comparar_columnas_subconjunto
 )
+
+# Test credentials from environment variables with defaults for testing
+TEST_DB_USER = os.getenv('TEST_DB_USER', 'user')
+TEST_DB_PASSWORD = os.getenv('TEST_DB_PASSWORD', 'pass')
+TEST_DB_HOST = os.getenv('TEST_DB_HOST', 'localhost')
+TEST_DB_PORT = os.getenv('TEST_DB_PORT', '5432')
+TEST_DB_NAME = os.getenv('TEST_DB_NAME', 'mydb')
 
 # =============================================================================
 # Pruebas para _cargar_expectativas_desde_yaml
@@ -109,11 +120,11 @@ class TestObtenerEngineSQLAlchemy(unittest.TestCase):
     def test_engine_success(self, mock_create_engine, mock_leer_config):
         fake_conf = {
             "db": {
-                "host": "localhost",
-                "port": 5432,
-                "user": "user",
-                "password": "pass",
-                "db_name": "mydb"
+                "host": TEST_DB_HOST,
+                "port": TEST_DB_PORT,
+                "user": TEST_DB_USER,
+                "password": TEST_DB_PASSWORD,
+                "db_name": TEST_DB_NAME
             }
         }
         mock_leer_config.return_value = fake_conf
@@ -121,7 +132,7 @@ class TestObtenerEngineSQLAlchemy(unittest.TestCase):
         mock_create_engine.return_value = fake_engine
 
         engine = _obtener_engine_sqlalchemy(fake_conf)
-        expected_url = "postgresql://user:pass@localhost:5432/mydb"
+        expected_url = f"postgresql://{TEST_DB_USER}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
         mock_create_engine.assert_called_once_with(expected_url)
         self.assertEqual(engine, fake_engine)
 

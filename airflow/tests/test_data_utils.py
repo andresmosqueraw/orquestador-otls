@@ -14,6 +14,18 @@ import re
 # Agregamos al path la ubicación del módulo a probar
 import utils.data_utils
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Test credentials from environment variables with defaults for testing
+TEST_DB_USER = os.getenv('TEST_DB_USER', 'test_user')
+TEST_DB_PASSWORD = os.getenv('TEST_DB_PASSWORD', 'test_pass')
+TEST_DB_HOST = os.getenv('TEST_DB_HOST', 'localhost')
+TEST_DB_PORT = os.getenv('TEST_DB_PORT', '5432')
+TEST_DB_NAME = os.getenv('TEST_DB_NAME', 'test_db')
+
 class TestDataUtils(unittest.TestCase):
     def setUp(self):
         # Creamos un directorio temporal para simular ETL_DIR y TEMP_FOLDER
@@ -28,6 +40,15 @@ class TestDataUtils(unittest.TestCase):
         dummy_config = {"insumos_web": {}, "insumos_local": {}, "db": {}}
         with open(self.cfg["CONFIG_PATH"], "w") as f:
             json.dump(dummy_config, f)
+        
+        # Standard test database configuration
+        self.test_db_config = {
+            "user": TEST_DB_USER,
+            "password": TEST_DB_PASSWORD,
+            "host": TEST_DB_HOST,
+            "port": TEST_DB_PORT,
+            "db_name": TEST_DB_NAME
+        }
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir)
@@ -143,10 +164,7 @@ class TestDataUtils(unittest.TestCase):
         self.assertIn("archivo para", str(cm.exception).lower())
 
     def test_ejecutar_importacion_general_archivo_directo_excel_inexistente(self):
-        self.cfg["db"] = {
-            "user": "test_user", "password": "test_pass",
-            "host": "localhost", "port": "5432", "db_name": "test_db"
-        }
+        self.cfg["db"] = self.test_db_config
         file_path = os.path.join(self.temp_dir, "missing.xlsx")  # No se crea
         fake_ti = MagicMock()
         fake_ti.xcom_pull.return_value = [{"key": "test", "zip_path": file_path}]
@@ -232,28 +250,24 @@ class TestDataUtils(unittest.TestCase):
 
     @patch("utils.data_utils.subprocess.run")
     def test_importar_shp_a_postgres_success(self, mock_run):
-        db_config = {"host": "localhost", "port": "5432", "db_name": "testdb", "user": "user", "password": "pass"}
-        utils.data_utils._importar_shp_a_postgres(db_config, "dummy.shp", "insumos.test")
+        utils.data_utils._importar_shp_a_postgres(self.test_db_config, "dummy.shp", "insumos.test")
         mock_run.assert_called()
 
     @patch("utils.data_utils.subprocess.run", side_effect=subprocess.CalledProcessError(1, "cmd", stderr="error"))
     def test_importar_shp_a_postgres_failure(self, mock_run):
-        db_config = {"host": "localhost", "port": "5432", "db_name": "testdb", "user": "user", "password": "pass"}
         with self.assertRaises(Exception) as context_exc:
-            utils.data_utils._importar_shp_a_postgres(db_config, "dummy.shp", "insumos.test")
+            utils.data_utils._importar_shp_a_postgres(self.test_db_config, "dummy.shp", "insumos.test")
         self.assertIn("error", str(context_exc.exception))
 
     @patch("utils.data_utils.subprocess.run")
     def test_importar_geojson_a_postgres_success(self, mock_run):
-        db_config = {"host": "localhost", "port": "5432", "db_name": "testdb", "user": "user", "password": "pass"}
-        utils.data_utils._importar_geojson_a_postgres(db_config, "dummy.geojson", "insumos.test")
+        utils.data_utils._importar_geojson_a_postgres(self.test_db_config, "dummy.geojson", "insumos.test")
         mock_run.assert_called()
 
     @patch("utils.data_utils.subprocess.run", side_effect=subprocess.CalledProcessError(1, "cmd", stderr="geo error"))
     def test_importar_geojson_a_postgres_failure(self, mock_run):
-        db_config = {"host": "localhost", "port": "5432", "db_name": "testdb", "user": "user", "password": "pass"}
         with self.assertRaises(Exception) as context_exc:
-            utils.data_utils._importar_geojson_a_postgres(db_config, "dummy.geojson", "insumos.test")
+            utils.data_utils._importar_geojson_a_postgres(self.test_db_config, "dummy.geojson", "insumos.test")
         self.assertIn("geo error", str(context_exc.exception))
 
     @patch("utils.data_utils.pd.read_excel")
@@ -293,13 +307,7 @@ class TestDataUtils(unittest.TestCase):
         with open(file_path, "w") as f:
             f.write("dummy")
 
-        self.cfg["db"] = {
-            "user": "test_user",
-            "password": "test_pass",
-            "host": "localhost",
-            "port": "5432",
-            "db_name": "test_db"
-        }
+        self.cfg["db"] = self.test_db_config
 
         fake_ti = MagicMock()
         fake_ti.xcom_pull.return_value = [{"key": "test", "zip_path": file_path}]

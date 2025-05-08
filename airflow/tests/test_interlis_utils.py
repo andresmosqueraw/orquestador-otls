@@ -2,11 +2,22 @@
 import os
 import subprocess
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Importamos las funciones a testear desde interlis_utils.
 from utils.interlis_utils import exportar_datos_ladm, importar_esquema_ladm
+
+# Test credentials from environment variables with defaults for testing
+TEST_DB_USER = os.getenv('TEST_DB_USER', 'user')
+TEST_DB_PASSWORD = os.getenv('TEST_DB_PASSWORD', 'pass')
+TEST_DB_HOST = os.getenv('TEST_DB_HOST', 'localhost')
+TEST_DB_PORT = os.getenv('TEST_DB_PORT', '5432')
+TEST_DB_NAME = os.getenv('TEST_DB_NAME', 'test_db')
 
 # Configuración externa ficticia (normalmente se obtiene de un sistema dinámico)
 fake_outer_cfg = {
@@ -19,11 +30,11 @@ fake_outer_cfg = {
 # Configuración dinámica ficticia (lo que retorna leer_configuracion)
 fake_dynamic_config = {
     "db": {
-        "host": "localhost",
-        "port": 5432,
-        "user": "user",
-        "password": "pass",
-        "db_name": "test_db"
+        "host": TEST_DB_HOST,
+        "port": TEST_DB_PORT,
+        "user": TEST_DB_USER,
+        "password": TEST_DB_PASSWORD,
+        "db_name": TEST_DB_NAME
     },
     "logs": {
         "nombre_etl": "TestETL"
