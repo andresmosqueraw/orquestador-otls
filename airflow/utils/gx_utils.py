@@ -26,8 +26,9 @@ def _cargar_expectativas_desde_yaml(yaml_filename, cfg):
             raise ValueError(msg)
         logging.info("\033[92m✔ _cargar_expectativas_desde_yaml finalizó sin errores.\033[0m")
         return data
-    except Exception as e:
-        raise e
+    except Exception:
+        logging.error("\033[91m❌ Error inesperado en _cargar_expectativas_desde_yaml.\033[0m", exc_info=True)
+        raise
 
 def _obtener_tablas_esperadas(data):
     logging.info("Iniciando _obtener_tablas_esperadas...")

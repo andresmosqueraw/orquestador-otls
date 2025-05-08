@@ -15,6 +15,12 @@ from utils.db_utils import ejecutar_sql
 from airflow.exceptions import AirflowSkipException
 
 # ---------------------------------------------------------------------------
+# Constantes
+# ---------------------------------------------------------------------------
+GEOJSON_EXTENSION = ".geojson"
+EXCEL_EXTENSIONS = [".xls", ".xlsx"]
+
+# ---------------------------------------------------------------------------
 # Funciones auxiliares comunes
 # ---------------------------------------------------------------------------
 
@@ -202,7 +208,7 @@ def procesar_insumos_descargados(cfg, **context):
 
         if ext == ".zip":
             resultados.append(_procesar_zip(key, file_path, extract_folder))
-        elif ext in [".xls", ".xlsx", ".geojson"]:
+        elif ext in EXCEL_EXTENSIONS + [GEOJSON_EXTENSION]:
             destino = os.path.join(extract_folder, os.path.basename(file_path))
             try:
                 shutil.copy(file_path, destino)
@@ -238,7 +244,7 @@ def _procesar_zip(key, file_path, extract_folder):
             namelist = zip_ref.namelist()
             # Se detecta Excel empaquetado por la presencia de "[Content_Types].xml" o carpeta "xl/"
             if "[Content_Types].xml" in namelist or any(n.startswith("xl/") for n in namelist):
-                destino = os.path.join(extract_folder, key + ".xlsx")
+                destino = os.path.join(extract_folder, key + EXCEL_EXTENSIONS[1])
                 shutil.copy(file_path, destino)
                 logging.info(f"Excel empaquetado detectado. Archivo copiado y renombrado a '{destino}'")
                 return {"key": key, "file": destino, "folder": extract_folder, "type": "excel"}
@@ -249,7 +255,7 @@ def _procesar_zip(key, file_path, extract_folder):
                 return {"key": key, "file": file_path, "folder": extract_folder, "type": "zip"}
     except zipfile.BadZipFile as e:
         logging.warning(f"El archivo '{file_path}' no es un ZIP válido: {e}. Tratando como GeoJSON empaquetado.")
-        destino = os.path.join(extract_folder, key + ".geojson")
+        destino = os.path.join(extract_folder, key + GEOJSON_EXTENSION)
         try:
             shutil.copy(file_path, destino)
             logging.info(f"✔ Archivo copiado como GeoJSON: {destino}")
@@ -310,14 +316,8 @@ def ejecutar_importacion_general_a_postgres(cfg, **kwargs):
     """
     logging.info("Iniciando 'ejecutar_importacion_general_a_postgres'...")
     ti = kwargs['ti']
-    insumos_info = ti.xcom_pull(task_ids='Descomprimir_Insumos', key="insumos_procesados")
-    logging.info(f"Datos recuperados para importación general: {insumos_info}")
-
-    if not insumos_info or not isinstance(insumos_info, list):
-        msg = "❌ No se encontró información válida de insumos en XCom."
-        logging.error(msg)
-        raise RuntimeError(msg)
-
+    insumos_info = _validar_insumos_info(ti)
+    
     engine = _obtener_engine_sqlalchemy(cfg)
     config = leer_configuracion(cfg)
     db_config = config["db"]
@@ -329,45 +329,70 @@ def ejecutar_importacion_general_a_postgres(cfg, **kwargs):
 
         key = insumo["key"]
         folder = os.path.join(cfg["TEMP_FOLDER"], key)
-        logging.info(f"[DEBUG] Carpeta esperada para '{key}': {folder}")
-        if os.path.exists(folder):
-            logging.info(f"[DEBUG] Contenido de '{folder}': {os.listdir(folder)}")
-        else:
-            logging.warning(f"[DEBUG] La carpeta '{folder}' no existe.")
-            archivo_directo = insumo.get("zip_path")
-            if archivo_directo and archivo_directo.lower().endswith(".xlsx") and os.path.exists(archivo_directo):
-                logging.info(f"Procesando Excel directo para '{key}': {archivo_directo}")
-                _importar_excel_a_postgres(cfg, engine, archivo_directo, table_name=key, schema="insumos")
-                continue
-
-        shp_files = _buscar_archivos_en_carpeta(folder, [".shp"])
-        geojson_files = _buscar_archivos_en_carpeta(folder, [".geojson"])
-        xlsx_files = _buscar_archivos_en_carpeta(folder, [".xlsx"])
-
-        logging.info(f"Archivos SHP encontrados: {shp_files}")
-        logging.info(f"Archivos GeoJSON encontrados: {geojson_files}")
-        logging.info(f"Archivos Excel encontrados: {xlsx_files}")
-
-        if not shp_files and not geojson_files and not xlsx_files:
-            msg = f"❌ El insumo '{key}' no contiene archivos compatibles."
-            logging.error(msg)
-            raise RuntimeError(msg)
-
-        for shp_file in shp_files:
-            tname = f"insumos.{key}"
-            logging.info(f"Importando SHP: {shp_file} -> {tname}")
-            _importar_shp_a_postgres(db_config, shp_file, tname)
-
-        for geojson_file in geojson_files:
-            tname = f"insumos.{key}"
-            logging.info(f"Importando GeoJSON: {geojson_file} -> {tname}")
-            _importar_geojson_a_postgres(db_config, geojson_file, tname)
-
-        for xlsx_file in xlsx_files:
-            logging.info(f"Importando Excel: {xlsx_file} -> insumos.{key}")
-            _importar_excel_a_postgres(cfg, engine, xlsx_file, table_name=key, schema="insumos")
+        _procesar_insumo(cfg, engine, db_config, key, folder, insumo)
 
     logging.info("✔ Importación a PostgreSQL completada correctamente.")
+
+def _validar_insumos_info(ti):
+    """Valida y retorna la información de insumos desde XCom."""
+    insumos_info = ti.xcom_pull(task_ids='Descomprimir_Insumos', key="insumos_procesados")
+    logging.info(f"Datos recuperados para importación general: {insumos_info}")
+
+    if not insumos_info or not isinstance(insumos_info, list):
+        msg = "❌ No se encontró información válida de insumos en XCom."
+        logging.error(msg)
+        raise RuntimeError(msg)
+    return insumos_info
+
+def _procesar_insumo(cfg, engine, db_config, key, folder, insumo):
+    """Procesa un insumo individual para importación."""
+    logging.info(f"[DEBUG] Carpeta esperada para '{key}': {folder}")
+    
+    if not os.path.exists(folder):
+        logging.warning(f"[DEBUG] La carpeta '{folder}' no existe.")
+        if _procesar_excel_directo(cfg, engine, key, insumo):
+            return
+
+    archivos = {
+        'shp': _buscar_archivos_en_carpeta(folder, [".shp"]),
+        'geojson': _buscar_archivos_en_carpeta(folder, [GEOJSON_EXTENSION]),
+        'xlsx': _buscar_archivos_en_carpeta(folder, [EXCEL_EXTENSIONS[1]])
+    }
+
+    for tipo, archivos_encontrados in archivos.items():
+        logging.info(f"Archivos {tipo} encontrados: {archivos_encontrados}")
+
+    if not any(archivos.values()):
+        msg = f"❌ El insumo '{key}' no contiene archivos compatibles."
+        logging.error(msg)
+        raise RuntimeError(msg)
+
+    _importar_archivos(cfg, engine, db_config, key, archivos)
+
+def _procesar_excel_directo(cfg, engine, key, insumo):
+    """Procesa un archivo Excel directo si existe."""
+    archivo_directo = insumo.get("zip_path")
+    if archivo_directo and archivo_directo.lower().endswith(EXCEL_EXTENSIONS[1]) and os.path.exists(archivo_directo):
+        logging.info(f"Procesando Excel directo para '{key}': {archivo_directo}")
+        _importar_excel_a_postgres(cfg, engine, archivo_directo, table_name=key, schema="insumos")
+        return True
+    return False
+
+def _importar_archivos(cfg, engine, db_config, key, archivos):
+    """Importa los archivos encontrados según su tipo."""
+    for shp_file in archivos['shp']:
+        tname = f"insumos.{key}"
+        logging.info(f"Importando SHP: {shp_file} -> {tname}")
+        _importar_shp_a_postgres(db_config, shp_file, tname)
+
+    for geojson_file in archivos['geojson']:
+        tname = f"insumos.{key}"
+        logging.info(f"Importando GeoJSON: {geojson_file} -> {tname}")
+        _importar_geojson_a_postgres(db_config, geojson_file, tname)
+
+    for xlsx_file in archivos['xlsx']:
+        logging.info(f"Importando Excel: {xlsx_file} -> insumos.{key}")
+        _importar_excel_a_postgres(cfg, engine, xlsx_file, table_name=key, schema="insumos")
 
 def _buscar_archivos_en_carpeta(folder, extensiones):
     """
@@ -516,7 +541,7 @@ def import_excel_to_db(db_config, excel_file, key):
         raise RuntimeError(msg)
 
     try:
-        df_merged = pd.merge(df_general, df_actos_reducido, on="Id del área protegida", how="left")
+        df_merged = pd.merge(df_general, df_actos_reducido, on="Id del área protegida", how="left", validate="1:1")
         logging.info(f"Merge realizado: {len(df_merged)} filas resultantes (deberían ser {len(df_general)}).")
     except Exception as e:
         msg = f"Error realizando merge: {e}"

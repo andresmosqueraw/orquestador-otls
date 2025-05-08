@@ -53,8 +53,8 @@ class TestLimpiarCarpetaTemporal(unittest.TestCase):
 
     def test_limpiar_carpeta_temporal_exists(self):
         # Simulamos que la carpeta existe y contiene un archivo y un directorio.
-        with patch("utils.utils.os.path.exists", return_value=True) as mock_exists, \
-             patch("utils.utils.os.listdir", return_value=["file.txt", "dir"]) as mock_listdir, \
+        with patch("utils.utils.os.path.exists", return_value=True), \
+             patch("utils.utils.os.listdir", return_value=["file.txt", "dir"]), \
              patch("utils.utils.os.path.isfile", side_effect=lambda path: "file.txt" in path), \
              patch("utils.utils.os.path.islink", return_value=False), \
              patch("utils.utils.os.path.isdir", side_effect=lambda path: "dir" in path), \
@@ -73,19 +73,19 @@ class TestLimpiarCarpetaTemporal(unittest.TestCase):
 
     def test_limpiar_carpeta_temporal_not_exists(self):
         # Simulamos que la carpeta no existe: se debe crear.
-        with patch("utils.utils.os.path.exists", return_value=False) as mock_exists, \
+        with patch("utils.utils.os.path.exists", return_value=False), \
              patch("utils.utils.os.makedirs") as mock_makedirs:
             limpiar_carpeta_temporal(self.cfg)
             mock_makedirs.assert_called_once_with(FAKE_TEMP_FOLDER, exist_ok=True)
 
     def test_limpiar_carpeta_temporal_error(self):
         # Simulamos un error al eliminar un archivo.
-        with patch("utils.utils.os.path.exists", return_value=True) as mock_exists, \
-             patch("utils.utils.os.listdir", return_value=["file.txt"]) as mock_listdir, \
+        with patch("utils.utils.os.path.exists", return_value=True), \
+             patch("utils.utils.os.listdir", return_value=["file.txt"]), \
              patch("utils.utils.os.path.isfile", return_value=True), \
              patch("utils.utils.os.path.islink", return_value=False), \
              patch("utils.utils.os.unlink", side_effect=Exception("Error al eliminar")), \
-             patch("utils.utils.os.makedirs") as mock_makedirs:
+             patch("utils.utils.os.makedirs"):
             with self.assertRaises(Exception) as context:
                 limpiar_carpeta_temporal(self.cfg)
             self.assertIn("Error eliminando", str(context.exception))

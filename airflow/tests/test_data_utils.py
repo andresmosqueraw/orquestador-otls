@@ -194,7 +194,7 @@ class TestDataUtils(unittest.TestCase):
         ]
         context = {"ti": fake_ti}
         resultado = utils.data_utils.procesar_insumos_descargados(self.cfg, **context)
-        self.assertTrue(isinstance(resultado, list))
+        self.assertIsInstance(resultado, list)
         self.assertEqual(resultado[0]["key"], "test")
         extract_folder = resultado[0]["folder"]
         self.assertTrue(os.path.exists(extract_folder))
@@ -342,7 +342,7 @@ class TestDataUtils(unittest.TestCase):
         fake_response = MagicMock()
         fake_response.iter_content = lambda chunk_size: [b"test data"]
         fake_response.raise_for_status = lambda: None
-        with patch("utils.data_utils.requests.get", return_value=fake_response) as mock_get:
+        with patch("utils.data_utils.requests.get", return_value=fake_response):
             resultado = utils.data_utils.descargar_archivo("http://dummy", dest_file)
         self.assertEqual(resultado, dest_file)
         with open(dest_file, "rb") as f:
@@ -484,7 +484,7 @@ class TestDataUtils(unittest.TestCase):
         })
         mock_read_excel.return_value = dummy_df
         # Con sheet_name se invoca la lectura de Excel y se invoca to_sql que ahora se patchéa.
-        resultado = utils.data_utils.import_excel_to_db2(db_config, "dummy.xlsx", "table_test", sheet_name="Actos")
+        utils.data_utils.import_excel_to_db2(db_config, "dummy.xlsx", "table_test", sheet_name="Actos")
         mock_read_excel.assert_called_with("dummy.xlsx", sheet_name="Actos")
         # Verificamos que se llamó al método to_sql (el cual ahora está parcheado)
         self.assertTrue(mock_to_sql.called)
