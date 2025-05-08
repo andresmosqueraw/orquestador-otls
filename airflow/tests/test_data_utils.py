@@ -48,7 +48,7 @@ class TestDataUtils(unittest.TestCase):
     @patch("utils.data_utils.limpiar_carpeta_temporal")
     @patch("utils.data_utils.leer_configuracion")
     def test_obtener_insumos_desde_web_success(self, mock_leer_config, mock_limpiar, mock_requests_get):
-        insumos_web = {"test": "http://example.com/test.zip"}
+        insumos_web = {"test": "https://example.com/test.zip"}
         insumos_local = {"test": "local/test.zip"}
         mock_leer_config.return_value = {
             "insumos_web": insumos_web,
@@ -72,7 +72,7 @@ class TestDataUtils(unittest.TestCase):
     @patch("utils.data_utils.limpiar_carpeta_temporal")
     @patch("utils.data_utils.leer_configuracion")
     def test_obtener_insumos_desde_web_archivo_vacio(self, mock_leer_config, mock_limpiar, mock_requests_get):
-        insumos_web = {"test": "http://example.com/test.zip"}
+        insumos_web = {"test": "https://example.com/test.zip"}
         insumos_local = {"test": "local/test.zip"}
         mock_leer_config.return_value = {
             "insumos_web": insumos_web,
@@ -171,7 +171,7 @@ class TestDataUtils(unittest.TestCase):
         fake_ti = MagicMock()
         context = {"ti": fake_ti}
         error_entry = {
-            "url": "http://example.com",
+            "url": "https://example.com",
             "key": "test",
             "insumos_local": {"test": "dummy/test.zip"},
             "base_local": self.temp_dir,
@@ -343,7 +343,7 @@ class TestDataUtils(unittest.TestCase):
         fake_response.iter_content = lambda chunk_size: [b"test data"]
         fake_response.raise_for_status = lambda: None
         with patch("utils.data_utils.requests.get", return_value=fake_response):
-            resultado = utils.data_utils.descargar_archivo("http://dummy", dest_file)
+            resultado = utils.data_utils.descargar_archivo("https://dummy", dest_file)
         self.assertEqual(resultado, dest_file)
         with open(dest_file, "rb") as f:
             self.assertEqual(f.read(), b"test data")
@@ -373,9 +373,9 @@ class TestDataUtils(unittest.TestCase):
             self.assertIn("failed", str(cm.exception))
 
     def test__crear_error(self):
-        error_dict = utils.data_utils._crear_error("http://dummy", "key1", {"key1": "path"}, "base", "error msg")
+        error_dict = utils.data_utils._crear_error("https://dummy", "key1", {"key1": "path"}, "base", "error msg")
         expected = {
-            "url": "http://dummy",
+            "url": "https://dummy",
             "key": "key1",
             "insumos_local": {"key1": "path"},
             "base_local": "base",
@@ -390,13 +390,13 @@ class TestDataUtils(unittest.TestCase):
         with open(file_path, "w") as f:
             f.write("content")
         insumos_local = {"test": "/dummy/test.zip"}
-        resultado = utils.data_utils.copia_insumo_local("http://dummy", "test", insumos_local, self.temp_dir, "some error")
+        resultado = utils.data_utils.copia_insumo_local("https://dummy", "test", insumos_local, self.temp_dir, "some error")
         self.assertEqual(resultado, file_path)
 
     def test_copia_insumo_local_failure(self):
         insumos_local = {"test": "/dummy/missing.zip"}
         with self.assertRaises(FileNotFoundError):
-            utils.data_utils.copia_insumo_local("http://dummy", "test", insumos_local, self.temp_dir, "some error")
+            utils.data_utils.copia_insumo_local("https://dummy", "test", insumos_local, self.temp_dir, "some error")
 
     def test__procesar_zip_excel_detected(self):
         extract_folder = os.path.join(self.temp_dir, "extract")
